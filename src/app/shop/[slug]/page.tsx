@@ -540,7 +540,6 @@ function OrderForm({
     customer_name: '',
     customer_contact: '',
     delivery_address: '',
-    delivery_location: '',
     quantity: 1,
     note: ''
   })
@@ -557,7 +556,6 @@ function OrderForm({
       customer_name: formData.customer_name,
       customer_contact: formData.customer_contact,
       delivery_address: formData.delivery_address,
-      delivery_location: formData.delivery_location,
       quantity: formData.quantity,
       note: formData.note || null
     }
@@ -584,7 +582,6 @@ function OrderForm({
             customer_name: '',
             customer_contact: '',
             delivery_address: '',
-            delivery_location: '',
             quantity: 1,
             note: ''
           })
@@ -653,25 +650,11 @@ function OrderForm({
             <textarea
               rows={2}
               required
+              placeholder="Include your delivery area/location"
               className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               value={formData.delivery_address}
               onChange={(e) => setFormData({ ...formData, delivery_address: e.target.value })}
             />
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Delivery Location/Area</label>
-            <input
-              type="text"
-              required
-              placeholder="e.g., Kinondoni, Dar es Salaam"
-              className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              value={formData.delivery_location}
-              onChange={(e) => setFormData({ ...formData, delivery_location: e.target.value })}
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Specify your delivery area for faster service
-            </p>
           </div>
 
           <div>
