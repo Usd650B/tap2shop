@@ -74,7 +74,7 @@ function ShopClient({ shop, products }: { shop: Shop; products: Product[] }) {
 
   // Filter products based on search term
   useEffect(() => {
-    const filtered = products.filter(product =>
+    const filtered = products.filter((product: Product) =>
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description?.toLowerCase().includes(searchTerm.toLowerCase())
     )
@@ -215,7 +215,7 @@ function ShopClient({ shop, products }: { shop: Shop; products: Product[] }) {
           </div>
         ) : (
           <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-            {filteredProducts.map((product) => (
+            {filteredProducts.map((product: Product) => (
               <div 
                 key={product.id} 
                 className="group bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border-2 cursor-pointer transform hover:-translate-y-1" 
@@ -329,11 +329,11 @@ function ShopClient({ shop, products }: { shop: Shop; products: Product[] }) {
       {/* Product Details Modal - Amazon/Alibaba Style */}
       {selectedProduct && !showOrderForm && (
         <div className="fixed inset-0 bg-gray-100 bg-opacity-95 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl flex flex-col">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl flex flex-col lg:max-w-5xl">
             {/* Close Button */}
             <button
               onClick={() => setSelectedProduct(null)}
-              className="absolute top-4 right-4 z-10 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors"
+              className="absolute top-4 right-4 z-10 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors lg:top-6 lg:right-6"
             >
               <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -342,7 +342,7 @@ function ShopClient({ shop, products }: { shop: Shop; products: Product[] }) {
 
             <div className="flex flex-col lg:flex-row flex-1 min-h-0">
               {/* Left Side - Product Images */}
-              <div className="lg:w-2/5 p-4 bg-gray-50 border-r border-gray-200">
+              <div className="lg:w-2/5 p-4 lg:p-6 bg-gray-50 border-r border-gray-200">
                 <div className="space-y-3">
                   {/* Main Image */}
                   <div className="aspect-square overflow-hidden rounded-lg bg-white shadow-inner">
@@ -352,26 +352,19 @@ function ShopClient({ shop, products }: { shop: Shop; products: Product[] }) {
                         alt={selectedProduct.name}
                         className="w-full h-full object-contain"
                         onLoad={(e) => {
-                          // Hide placeholder when image loads successfully
                           const placeholder = e.currentTarget.nextElementSibling as HTMLElement
-                          if (placeholder) {
-                            placeholder.style.display = 'none'
-                          }
+                          if (placeholder) placeholder.style.display = 'none'
                         }}
                         onError={(e) => {
-                          // Hide broken image and show fallback
                           e.currentTarget.style.display = 'none'
                           const placeholder = e.currentTarget.nextElementSibling as HTMLElement
-                          if (placeholder) {
-                            placeholder.style.display = 'flex'
-                          }
+                          if (placeholder) placeholder.style.display = 'flex'
                         }}
                       />
                     ) : null}
                     
-                    {/* Fallback placeholder - hidden when image loads */}
                     <div className="w-full h-full flex items-center justify-center" style={{ display: selectedProduct.image_url ? 'none' : 'flex' }}>
-                      <svg className="w-20 h-20 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-16 h-16 lg:w-20 lg:h-20 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </div>
@@ -401,10 +394,10 @@ function ShopClient({ shop, products }: { shop: Shop; products: Product[] }) {
               </div>
 
               {/* Right Side - Product Info */}
-              <div className="lg:w-3/5 p-4 overflow-y-auto flex-1">
+              <div className="lg:w-3/5 p-4 lg:p-6 overflow-y-auto flex-1">
                 {/* Product Title */}
                 <h1 
-                  className="text-xl font-bold text-gray-900 mb-2"
+                  className="text-lg lg:text-xl font-bold text-gray-900 mb-2"
                   style={{ 
                     fontFamily: shop.font_style === 'elegant' ? 'serif' : 
                                shop.font_style === 'playful' ? 'cursive' :
@@ -429,7 +422,7 @@ function ShopClient({ shop, products }: { shop: Shop; products: Product[] }) {
                 {/* Price Section */}
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-3 mb-4 border border-blue-200">
                   <div className="flex items-baseline space-x-2">
-                    <span className="text-2xl font-bold" style={{ color: shop.primary_color || '#4F46E5' }}>
+                    <span className="text-xl lg:text-2xl font-bold" style={{ color: shop.primary_color || '#4F46E5' }}>
                       TZS {selectedProduct.price}
                     </span>
                     <span className="text-xs text-gray-500 line-through">TZS {(selectedProduct.price * 1.2).toFixed(2)}</span>
@@ -448,8 +441,8 @@ function ShopClient({ shop, products }: { shop: Shop; products: Product[] }) {
                 {/* Description */}
                 {selectedProduct.description && (
                   <div className="mb-4">
-                    <h3 className="text-base font-semibold text-gray-900 mb-2">Description</h3>
-                    <p className="text-sm text-gray-700 leading-relaxed bg-gray-50 rounded-lg p-3">
+                    <h3 className="text-sm font-semibold text-gray-900 mb-2">Description</h3>
+                    <p className="text-xs text-gray-700 leading-relaxed bg-gray-50 rounded-lg p-3">
                       {selectedProduct.description}
                     </p>
                   </div>
@@ -457,7 +450,7 @@ function ShopClient({ shop, products }: { shop: Shop; products: Product[] }) {
 
                 {/* Product Features */}
                 <div className="mb-4">
-                  <h3 className="text-base font-semibold text-gray-900 mb-2">Key Features</h3>
+                  <h3 className="text-sm font-semibold text-gray-900 mb-2">Key Features</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <div className="flex items-center space-x-2 bg-gray-50 rounded-lg p-2">
                       <svg className="w-3 h-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -488,7 +481,7 @@ function ShopClient({ shop, products }: { shop: Shop; products: Product[] }) {
 
                 {/* Seller Info */}
                 <div className="bg-gray-50 rounded-lg p-3 mb-4">
-                  <h3 className="text-base font-semibold text-gray-900 mb-2">Seller Information</h3>
+                  <h3 className="text-sm font-semibold text-gray-900 mb-2">Seller Information</h3>
                   <div className="space-y-1">
                     <div className="flex items-center space-x-2">
                       <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
@@ -512,14 +505,14 @@ function ShopClient({ shop, products }: { shop: Shop; products: Product[] }) {
                       onClick={() => {
                         setShowOrderForm(true)
                       }}
-                      className="flex-1 px-4 py-3 text-white font-bold rounded-lg transition-all duration-200 transform hover:scale-105 text-base shadow-lg"
+                      className="flex-1 px-4 py-3 text-white font-bold rounded-lg transition-all duration-200 transform hover:scale-105 text-sm lg:text-base shadow-lg"
                       style={{ backgroundColor: shop.accent_color || '#10B981' }}
                     >
                       🛒 Order Now
                     </button>
                     <button
                       onClick={() => setSelectedProduct(null)}
-                      className="px-4 py-3 text-gray-700 font-semibold rounded-lg border-2 border-gray-300 hover:bg-gray-50 transition-colors text-base"
+                      className="px-4 py-3 text-gray-700 font-semibold rounded-lg border-2 border-gray-300 hover:bg-gray-50 transition-colors text-sm lg:text-base"
                     >
                       Close
                     </button>
@@ -590,137 +583,126 @@ function OrderForm({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-lg w-full p-6">
-        <div className="flex items-start space-x-4 mb-6">
+      <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto p-5 shadow-xl">
+        <div className="flex items-start space-x-3 mb-4">
           {product.image_url && (
             <img 
               src={product.image_url} 
               alt={product.name}
-              className="w-24 h-24 object-cover rounded-lg border border-gray-200 flex-shrink-0"
+              className="w-16 h-16 object-cover rounded-lg border border-gray-200 flex-shrink-0"
             />
           )}
           <div className="flex-1">
-            <h2 className="text-xl font-bold text-gray-900 mb-2">Order {product.name}</h2>
+            <h2 className="text-lg font-bold text-gray-900 mb-1">Order {product.name}</h2>
             {product.description && (
-              <p className="text-sm text-gray-600 mb-3">{product.description}</p>
+              <p className="text-xs text-gray-600 line-clamp-2">{product.description}</p>
             )}
-            <div className="bg-gray-50 rounded-md p-3">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-sm text-gray-600">Price per item:</span>
-                <span className="font-semibold text-gray-900">TZS {product.price}</span>
-              </div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-sm text-gray-600">Quantity:</span>
-                <span className="font-semibold text-gray-900">{formData.quantity}</span>
-              </div>
-              <div className="border-t pt-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-gray-900">Total:</span>
-                  <span className="text-lg font-bold text-indigo-600">
-                    TZS {(product.price * formData.quantity).toFixed(2)}
-                  </span>
-                </div>
+            <div className="bg-gray-50 rounded-md p-2 mt-2">
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-600">Total:</span>
+                <span className="text-sm font-bold text-indigo-600">
+                  TZS {(product.price * formData.quantity).toFixed(2)}
+                </span>
               </div>
             </div>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Your Name</label>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Your Name</label>
             <input
               type="text"
               required
-              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               value={formData.customer_name}
               onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Contact (WhatsApp/Email)</label>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Contact (WhatsApp/Email)</label>
             <input
               type="text"
               required
-              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               value={formData.customer_contact}
               onChange={(e) => setFormData({ ...formData, customer_contact: e.target.value })}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Delivery Address</label>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Delivery Address</label>
             <textarea
               rows={2}
               required
-              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               value={formData.delivery_address}
               onChange={(e) => setFormData({ ...formData, delivery_address: e.target.value })}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Delivery Location/Area</label>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Delivery Location/Area</label>
             <input
               type="text"
               required
-              placeholder="e.g., Kinondoni, Dar es Salaam, Mwanza"
-              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              placeholder="e.g., Kinondoni, Dar es Salaam"
+              className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               value={formData.delivery_location}
               onChange={(e) => setFormData({ ...formData, delivery_location: e.target.value })}
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="text-xs text-gray-500 mt-1">
               Specify your delivery area for faster service
             </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Quantity</label>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Quantity</label>
             <input
               type="number"
               min="1"
               required
-              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               value={formData.quantity}
               onChange={(e) => setFormData({ ...formData, quantity: parseInt(e.target.value) || 1 })}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Note (Optional)</label>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Note (Optional)</label>
             <textarea
               rows={2}
-              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               value={formData.note}
               onChange={(e) => setFormData({ ...formData, note: e.target.value })}
             />
           </div>
 
-          <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
-            <p className="text-sm text-blue-800">
-              <strong>Important:</strong> Payment and delivery are arranged directly with the seller. 
-              They will contact you using the information provided.
+          <div className="bg-blue-50 border border-blue-200 rounded-md p-2">
+            <p className="text-xs text-blue-800">
+              <strong>Important:</strong> Payment and delivery are arranged directly with the seller.
             </p>
           </div>
 
           {message && (
-            <div className={`text-sm ${message.includes('Error') ? 'text-red-600' : 'text-green-600'}`}>
+            <div className={`text-xs ${message.includes('Error') ? 'text-red-600' : 'text-green-600'}`}>
               {message}
             </div>
           )}
 
-          <div className="flex space-x-3">
+          <div className="flex space-x-2">
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 disabled:opacity-50"
+              className="flex-1 bg-indigo-600 text-white py-2 px-3 rounded-md hover:bg-indigo-700 disabled:opacity-50 text-sm font-medium"
             >
-              {loading ? 'Placing Order...' : 'Place Order'}
+              {loading ? 'Placing...' : 'Place Order'}
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300"
+              className="flex-1 bg-gray-200 text-gray-800 py-2 px-3 rounded-md hover:bg-gray-300 text-sm font-medium"
             >
               Cancel
             </button>
