@@ -40,6 +40,11 @@ export default function ShopPage({ params }: { params: Promise<{ slug: string }>
     }
 
     fetchData()
+    
+    // Set up periodic refresh to check for product updates
+    const interval = setInterval(fetchData, 30000) // Refresh every 30 seconds
+    
+    return () => clearInterval(interval)
   }, [slug])
 
   if (loading) {
@@ -64,13 +69,35 @@ export default function ShopPage({ params }: { params: Promise<{ slug: string }>
   return <ShopClient shop={shop} products={products} />
 }
 
-function ShopClient({ shop, products }: { shop: Shop; products: Product[] }) {
+function ShopClient({ shop, products: initialProducts }: { shop: Shop; products: Product[] }) {
   // Add product gallery state
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [showOrderForm, setShowOrderForm] = useState(false)
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0)
   const [searchTerm, setSearchTerm] = useState('')
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>(products)
+  const [products, setProducts] = useState<Product[]>(initialProducts)
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>(initialProducts)
+  const [isRefreshing, setIsRefreshing] = useState(false)
+
+  // Update products when initialProducts change
+  useEffect(() => {
+    setProducts(initialProducts)
+    setFilteredProducts(initialProducts)
+  }, [initialProducts])
+
+  // Manual refresh function
+  const refreshProducts = async () => {
+    setIsRefreshing(true)
+    const { data: productsData } = await supabase
+      .from('products')
+      .select('id, shop_id, name, price, description, image_url, created_at, updated_at, stock')
+      .eq('shop_id', shop.id)
+    
+    const updatedProducts = productsData || []
+    setProducts(updatedProducts)
+    setFilteredProducts(updatedProducts)
+    setIsRefreshing(false)
+  }
 
   // Filter products based on search term
   useEffect(() => {
@@ -158,32 +185,53 @@ function ShopClient({ shop, products }: { shop: Shop; products: Product[] }) {
       {/* Search Bar Section */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="relative max-w-2xl mx-auto">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-              style={{ 
-                borderColor: shop.secondary_color || '#7C3AED'
-              }}
-            />
-            {searchTerm && (
-              <button
-                onClick={() => setSearchTerm('')}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center"
-              >
-                <svg className="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+            <div className="relative flex-1 max-w-2xl">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-              </button>
-            )}
+              </div>
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                style={{ 
+                  borderColor: shop.secondary_color || '#7C3AED'
+                }}
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  <svg className="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
+            <button
+              onClick={refreshProducts}
+              disabled={isRefreshing}
+              className="px-4 py-3 text-sm font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+              style={{ 
+                borderColor: shop.secondary_color || '#7C3AED',
+                color: shop.primary_color || '#4F46E5'
+              }}
+            >
+              <svg 
+                className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span>{isRefreshing ? 'Refreshing...' : 'Refresh'}</span>
+            </button>
           </div>
           {searchTerm && (
             <div className="mt-3 text-center">
