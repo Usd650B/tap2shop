@@ -554,28 +554,45 @@ function OrderForm({
 
     const orderData = {
       product_id: product.id,
-      ...formData
+      customer_name: formData.customer_name,
+      customer_contact: formData.customer_contact,
+      delivery_address: formData.delivery_address,
+      delivery_location: formData.delivery_location,
+      quantity: formData.quantity,
+      note: formData.note || null
     }
 
-    const { error } = await supabase
-      .from('orders')
-      .insert(orderData)
-    
-    if (error) {
-      setMessage('Error placing order. Please try again.')
-    } else {
-      setMessage('Order placed successfully! The seller will contact you soon.')
-      setTimeout(() => {
-        onClose()
-        setFormData({
-          customer_name: '',
-          customer_contact: '',
-          delivery_address: '',
-          delivery_location: '',
-          quantity: 1,
-          note: ''
-        })
-      }, 2000)
+    console.log('Submitting order:', orderData)
+
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .insert(orderData)
+        .select()
+      
+      console.log('Order response:', { data, error })
+      
+      if (error) {
+        console.error('Order error:', error)
+        setMessage(`Error: ${error.message || 'Failed to place order. Please try again.'}`)
+      } else {
+        console.log('Order placed successfully:', data)
+        setMessage('Order placed successfully! The seller will contact you soon.')
+        setTimeout(() => {
+          onClose()
+          setFormData({
+            customer_name: '',
+            customer_contact: '',
+            delivery_address: '',
+            delivery_location: '',
+            quantity: 1,
+            note: ''
+          })
+        }, 2000)
+      }
+    } catch (err) {
+      console.error('Order submission error:', err)
+      setMessage('Network error. Please check your connection and try again.')
     }
 
     setLoading(false)
@@ -686,7 +703,9 @@ function OrderForm({
           </div>
 
           {message && (
-            <div className={`text-xs ${message.includes('Error') ? 'text-red-600' : 'text-green-600'}`}>
+            <div className={`text-xs p-2 rounded-md ${
+              message.includes('Error') || message.includes('Network') ? 'text-red-600 bg-red-50 border border-red-200' : 'text-green-600 bg-green-50 border border-green-200'
+            }`}>
               {message}
             </div>
           )}
