@@ -9,6 +9,7 @@ import { uploadImage, validateImageFile } from '@/utils/upload'
 import ShopSettings from './ShopSettings'
 import ProductManagement from './ProductManagement'
 import OrdersManagement from './OrdersManagement'
+import CustomerOrders from './CustomerOrders'
 
 function OverviewTab({ stats, shop }: { stats: any, shop: Shop | null }) {
   return (
@@ -120,6 +121,7 @@ export default function Dashboard() {
   const [shop, setShop] = useState<Shop | null>(null)
   const [products, setProducts] = useState<Product[]>([])
   const [orders, setOrders] = useState<Order[]>([])
+  const [isSeller, setIsSeller] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -132,13 +134,14 @@ export default function Dashboard() {
   const fetchShop = async () => {
     if (!user) return
     
-    const { data } = await supabase
+    const { data: shopData } = await supabase
       .from('shops')
       .select('*')
       .eq('user_id', user.id)
       .single()
     
-    setShop(data)
+    setShop(shopData)
+    setIsSeller(!!shopData) // Set isSeller based on whether user has a shop
   }
 
   const fetchProducts = async () => {
@@ -155,33 +158,57 @@ export default function Dashboard() {
   const fetchOrders = async () => {
     if (!user) return
     
+    // Check if user is a seller (has a shop) or customer
     const { data: shopData } = await supabase
       .from('shops')
       .select('id')
       .eq('user_id', user.id)
       .single()
     
-    if (!shopData) return
-    
-    const { data: shopProducts } = await supabase
-      .from('products')
-      .select('id')
-      .eq('shop_id', shopData.id)
-    
-    const { data } = await supabase
-      .from('orders')
-      .select(`
-        *,
-        products (
-          id,
-          name,
-          price,
-          image_url
-        )
-      `)
-      .in('product_id', shopProducts?.map(p => p.id) || [])
-    
-    setOrders(data || [])
+    if (shopData) {
+      // User is a seller - fetch orders for their products
+      const { data: shopProducts } = await supabase
+        .from('products')
+        .select('id')
+        .eq('shop_id', shopData.id)
+      
+      const { data } = await supabase
+        .from('orders')
+        .select(`
+          *,
+          products (
+            id,
+            name,
+            price,
+            image_url
+          )
+        `)
+        .in('product_id', shopProducts?.map(p => p.id) || [])
+      
+      setOrders(data || [])
+    } else {
+      // User is a customer - fetch orders they placed
+      const { data } = await supabase
+        .from('orders')
+        .select(`
+          *,
+          products (
+            id,
+            name,
+            price,
+            image_url,
+            shop:shops!inner (
+              id,
+              name,
+              slug
+            )
+          )
+        `)
+        .eq('customer_contact', user.email) // Using email as customer identifier
+        .order('created_at', { ascending: false })
+      
+      setOrders(data || [])
+    }
   }
 
   const handleSignOut = async () => {
@@ -465,14 +492,14 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 capitalize">
-                  {activeTab === 'overview' && 'Dashboard Overview'}
+                  {activeTab === 'overview' && (isSeller ? 'Dashboard Overview' : 'Your Orders Overview')}
                   {activeTab === 'shop' && 'Shop Settings'}
                   {activeTab === 'products' && 'Product Management'}
-                  {activeTab === 'orders' && 'Order Management'}
+                  {activeTab === 'orders' && (isSeller ? 'Order Management' : 'Your Orders')}
                   {activeTab === 'analytics' && 'Analytics'}
                 </h2>
                 <p className="text-sm text-gray-500 mt-1">
-                  Welcome back! Here's what's happening with your shop today.
+                  {isSeller ? 'Welcome back! Here\'s what\'s happening with your shop today.' : 'Welcome back! Here are your recent orders.'}
                 </p>
               </div>
               <div className="flex items-center space-x-4">
@@ -507,10 +534,10 @@ export default function Dashboard() {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg font-bold text-gray-900 capitalize">
-                {activeTab === 'overview' && 'Dashboard'}
+                {activeTab === 'overview' && (isSeller ? 'Dashboard' : 'Your Orders')}
                 {activeTab === 'shop' && 'Shop Settings'}
                 {activeTab === 'products' && 'Products'}
-                {activeTab === 'orders' && 'Orders'}
+                {activeTab === 'orders' && (isSeller ? 'Orders' : 'Your Orders')}
                 {activeTab === 'analytics' && 'Analytics'}
               </h2>
             </div>
@@ -529,7 +556,13 @@ export default function Dashboard() {
           {activeTab === 'overview' && <OverviewTab stats={stats} shop={shop} />}
           {activeTab === 'shop' && <ShopSettings shop={shop} onShopUpdate={fetchShop} />}
           {activeTab === 'products' && <ProductManagement shop={shop} products={products} onProductsUpdate={handleProductsUpdate} />}
-          {activeTab === 'orders' && <OrdersManagement orders={orders} onOrdersUpdate={handleOrdersUpdate} />}
+          {activeTab === 'orders' && (
+          isSeller ? (
+            <OrdersManagement orders={orders} onOrdersUpdate={handleOrdersUpdate} />
+          ) : (
+            <CustomerOrders orders={orders} onOrdersUpdate={handleOrdersUpdate} />
+          )
+        )}
           {activeTab === 'analytics' && <AnalyticsTab stats={stats} orders={orders} />}
         </main>
       </div>

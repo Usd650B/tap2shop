@@ -40,6 +40,18 @@ export interface Order {
   updated_at: string;
   delivered_at?: string;
   received_at?: string;
+  product?: {
+    id: string;
+    name: string;
+    price: number;
+    description?: string;
+    image_url?: string;
+    shop?: {
+      id: string;
+      name: string;
+      slug: string;
+    };
+  };
 }
 
 export interface OrderWithProduct extends Order {
