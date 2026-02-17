@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Package, CheckCircle, Clock, Truck, XCircle, MapPin, User, Phone, Search, Filter, ExternalLink } from 'lucide-react'
 import { Order } from '@/types'
 import { generateOrderConfirmationLink } from '@/utils/orderUtils'
+import { supabase } from '@/lib/supabase'
 
 interface CustomerOrdersProps {
   orders: Order[]
@@ -26,20 +27,21 @@ export default function CustomerOrders({ orders, onOrdersUpdate }: CustomerOrder
   const confirmReceipt = async (orderId: string) => {
     setConfirming(orderId)
     try {
-      const response = await fetch('/api/confirm-receipt', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ orderId }),
-      })
+      const { error } = await supabase
+        .from('orders')
+        .update({ 
+          status: 'Received',
+          received_at: new Date().toISOString()
+        })
+        .eq('id', orderId)
 
-      if (response.ok) {
+      if (error) {
+        console.error('Error confirming receipt:', error)
+        alert('Failed to confirm receipt. Please try again.')
+      } else {
         // Update local state
         onOrdersUpdate()
         alert('Thank you! Your receipt has been confirmed.')
-      } else {
-        alert('Failed to confirm receipt. Please try again.')
       }
     } catch (error) {
       console.error('Error confirming receipt:', error)

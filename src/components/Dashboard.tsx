@@ -188,6 +188,14 @@ export default function Dashboard() {
       setOrders(data || [])
     } else {
       // User is a customer - fetch orders they placed
+      // Try multiple contact methods: email, phone from metadata, or username
+      const contactMethods = [
+        user.email,
+        user.user_metadata?.phone,
+        user.user_metadata?.username,
+        user.user_metadata?.full_name
+      ].filter(Boolean) // Remove null/undefined values
+      
       const { data } = await supabase
         .from('orders')
         .select(`
@@ -204,7 +212,7 @@ export default function Dashboard() {
             )
           )
         `)
-        .eq('customer_contact', user.email) // Using email as customer identifier
+        .in('customer_contact', contactMethods)
         .order('created_at', { ascending: false })
       
       setOrders(data || [])
