@@ -265,7 +265,7 @@ export default function Dashboard() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
-              <h1 className="text-lg font-bold text-gray-900">Tap2shop</h1>
+              <h1 className="text-lg font-bold text-gray-900">SIP - ShopInPocket</h1>
             </div>
             <button
               onClick={copyShopLink}
@@ -290,7 +290,7 @@ export default function Dashboard() {
           <div className="relative bg-white w-80 max-w-full h-full shadow-xl">
             <div className="p-6 border-b border-gray-200">
               <div className="flex items-center justify-between">
-                <h1 className="text-xl font-bold text-gray-900">Tap2shop</h1>
+                <h1 className="text-xl font-bold text-gray-900">SIP - ShopInPocket</h1>
                 <button
                   onClick={() => setSidebarOpen(false)}
                   className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
@@ -394,7 +394,7 @@ export default function Dashboard() {
       {/* Desktop Sidebar */}
       <div className="hidden lg:flex w-64 bg-white shadow-lg flex-col">
         <div className="p-6 border-b border-gray-200">
-          <h1 className="text-xl font-bold text-gray-900">Tap2shop</h1>
+          <h1 className="text-xl font-bold text-gray-900">SIP - ShopInPocket</h1>
         </div>
 
         <nav className="flex-1 p-4">

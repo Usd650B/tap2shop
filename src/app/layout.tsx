@@ -17,7 +17,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "ShopInPocket - Create Your Online Shop",
+  title: "SIP - ShopInPocket - Create Your Online Shop",
   description: "Create a simple online shop for your social media customers",
   icons: {
     icon: '/favicon.ico',

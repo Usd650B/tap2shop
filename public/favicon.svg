@@ -18,6 +18,6 @@
         stroke-linecap="round" 
         stroke-linejoin="round"/>
   
-  <!-- S letter -->
-  <text x="16" y="22" font-family="Arial Black, sans-serif" font-size="8" font-weight="900" text-anchor="middle" fill="white">S</text>
+  <!-- SIP text -->
+  <text x="16" y="22" font-family="Arial Black, sans-serif" font-size="6" font-weight="900" text-anchor="middle" fill="white">SIP</text>
 </svg>
