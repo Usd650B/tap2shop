@@ -14,43 +14,85 @@ export default function ShopPage({ params }: { params: Promise<{ slug: string }>
   const [shop, setShop] = useState<Shop | null>(null)
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    let isMounted = true
+    
     const fetchData = async () => {
+      if (!isMounted) return
+      
       setLoading(true)
-      const { data: shopData } = await supabase
-        .from('shops')
-        .select('*')
-        .eq('slug', slug)
-        .single()
+      setError(null)
+      
+      try {
+        const { data: shopData, error: shopError } = await supabase
+          .from('shops')
+          .select('*')
+          .eq('slug', slug)
+          .single()
 
-      if (shopData) {
-        setShop(shopData)
-        const { data: productsData } = await supabase
-          .from('products')
-          .select('id, shop_id, name, price, description, image_url, created_at, updated_at, stock')
-          .eq('shop_id', shopData.id)
-        
-        console.log('Fetched products:', productsData)
-        console.log('Product image URLs:', productsData?.map(p => ({ id: p.id, name: p.name, image_url: p.image_url })))
-        
-        setProducts(productsData || [])
+        if (shopError) throw shopError
+
+        if (shopData && isMounted) {
+          setShop(shopData)
+          
+          const { data: productsData, error: productsError } = await supabase
+            .from('products')
+            .select('id, shop_id, name, price, description, image_url, created_at, updated_at, stock')
+            .eq('shop_id', shopData.id)
+          
+          if (productsError) throw productsError
+          
+          if (isMounted) {
+            console.log('Fetched products:', productsData)
+            setProducts(productsData || [])
+          }
+        }
+      } catch (err) {
+        if (isMounted) {
+          console.error('Error fetching shop data:', err)
+          setError('Failed to load shop. Please try again.')
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false)
+        }
       }
-      setLoading(false)
     }
 
     fetchData()
     
-    // Set up periodic refresh to check for product updates
-    const interval = setInterval(fetchData, 30000) // Refresh every 30 seconds
-    
-    return () => clearInterval(interval)
+    return () => {
+      isMounted = false
+    }
   }, [slug])
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <div className="text-lg text-gray-600">Loading shop...</div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-500 text-6xl mb-4">⚠️</div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Error Loading Shop</h1>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
       </div>
     )
   }
@@ -79,27 +121,7 @@ function ShopClient({ shop, products: initialProducts }: { shop: Shop; products:
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(initialProducts)
   const [isRefreshing, setIsRefreshing] = useState(false)
 
-  // Update products when initialProducts change
-  useEffect(() => {
-    setProducts(initialProducts)
-    setFilteredProducts(initialProducts)
-  }, [initialProducts])
-
-  // Manual refresh function
-  const refreshProducts = async () => {
-    setIsRefreshing(true)
-    const { data: productsData } = await supabase
-      .from('products')
-      .select('id, shop_id, name, price, description, image_url, created_at, updated_at, stock')
-      .eq('shop_id', shop.id)
-    
-    const updatedProducts = productsData || []
-    setProducts(updatedProducts)
-    setFilteredProducts(updatedProducts)
-    setIsRefreshing(false)
-  }
-
-  // Filter products based on search term
+  // Memoize filtered products to prevent unnecessary re-renders
   useEffect(() => {
     const filtered = products.filter((product: Product) =>
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -107,6 +129,45 @@ function ShopClient({ shop, products: initialProducts }: { shop: Shop; products:
     )
     setFilteredProducts(filtered)
   }, [searchTerm, products])
+
+  // Update products when initialProducts change (only if different)
+  useEffect(() => {
+    if (JSON.stringify(initialProducts) !== JSON.stringify(products)) {
+      setProducts(initialProducts)
+      setFilteredProducts(
+        initialProducts.filter((product: Product) =>
+          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.description?.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      )
+    }
+  }, [initialProducts, searchTerm, products.length])
+
+  // Manual refresh function
+  const refreshProducts = async () => {
+    setIsRefreshing(true)
+    try {
+      const { data: productsData, error } = await supabase
+        .from('products')
+        .select('id, shop_id, name, price, description, image_url, created_at, updated_at, stock')
+        .eq('shop_id', shop.id)
+      
+      if (error) throw error
+      
+      const updatedProducts = productsData || []
+      setProducts(updatedProducts)
+      setFilteredProducts(
+        updatedProducts.filter((product: Product) =>
+          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.description?.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      )
+    } catch (error) {
+      console.error('Error refreshing products:', error)
+    } finally {
+      setIsRefreshing(false)
+    }
+  }
 
   const handleOrderClick = (product: Product) => {
     setSelectedProduct(product)
