@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { AdminAuthProvider } from "@/contexts/AdminAuthContext";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -42,7 +43,9 @@ export default function RootLayout({
         className={`${inter.variable} ${poppins.variable} font-sans antialiased`}
       >
         <AuthProvider>
-          {children}
+          <AdminAuthProvider>
+            {children}
+          </AdminAuthProvider>
         </AuthProvider>
       </body>
     </html>
