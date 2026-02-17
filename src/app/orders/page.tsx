@@ -13,9 +13,11 @@ interface Order {
   delivery_location: string
   quantity: number
   note?: string
-  status: 'Pending' | 'Accepted' | 'Completed' | 'Rejected'
+  status: 'Pending' | 'Accepted' | 'Delivered' | 'Received' | 'Completed' | 'Rejected'
   created_at: string
   updated_at: string
+  delivered_at?: string
+  received_at?: string
   product: {
     id: string
     name: string
@@ -114,7 +116,10 @@ export default function SellerOrdersPage() {
     try {
       const { error } = await supabase
         .from('orders')
-        .update({ status: newStatus })
+        .update({ 
+          status: newStatus,
+          ...(newStatus === 'Delivered' && { delivered_at: new Date().toISOString() })
+        })
         .eq('id', orderId)
 
       if (error) {
@@ -123,7 +128,7 @@ export default function SellerOrdersPage() {
       } else {
         // Update local state
         setOrders(orders.map(order => 
-          order.id === orderId ? { ...order, status: newStatus } : order
+          order.id === orderId ? { ...order, status: newStatus, ...(newStatus === 'Delivered' && { delivered_at: new Date().toISOString() }) } : order
         ))
       }
     } catch (error) {
@@ -141,6 +146,8 @@ export default function SellerOrdersPage() {
     switch (status) {
       case 'Pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200'
       case 'Accepted': return 'bg-blue-100 text-blue-800 border-blue-200'
+      case 'Delivered': return 'bg-purple-100 text-purple-800 border-purple-200'
+      case 'Received': return 'bg-green-100 text-green-800 border-green-200'
       case 'Completed': return 'bg-green-100 text-green-800 border-green-200'
       case 'Rejected': return 'bg-red-100 text-red-800 border-red-200'
       default: return 'bg-gray-100 text-gray-800 border-gray-200'
@@ -151,6 +158,8 @@ export default function SellerOrdersPage() {
     switch (status) {
       case 'Pending': return <Clock className="w-4 h-4" />
       case 'Accepted': return <Truck className="w-4 h-4" />
+      case 'Delivered': return <Package className="w-4 h-4" />
+      case 'Received': return <CheckCircle className="w-4 h-4" />
       case 'Completed': return <CheckCircle className="w-4 h-4" />
       case 'Rejected': return <XCircle className="w-4 h-4" />
       default: return <Clock className="w-4 h-4" />
@@ -184,6 +193,8 @@ export default function SellerOrdersPage() {
               { key: 'all', label: 'All Orders', count: orders.length },
               { key: 'pending', label: 'Pending', count: orders.filter(o => o.status.toLowerCase() === 'pending').length },
               { key: 'accepted', label: 'Accepted', count: orders.filter(o => o.status.toLowerCase() === 'accepted').length },
+              { key: 'delivered', label: 'Delivered', count: orders.filter(o => o.status.toLowerCase() === 'delivered').length },
+              { key: 'received', label: 'Received', count: orders.filter(o => o.status.toLowerCase() === 'received').length },
               { key: 'completed', label: 'Completed', count: orders.filter(o => o.status.toLowerCase() === 'completed').length },
               { key: 'rejected', label: 'Rejected', count: orders.filter(o => o.status.toLowerCase() === 'rejected').length }
             ].map((tab) => (
@@ -261,11 +272,21 @@ export default function SellerOrdersPage() {
                       )}
                       {order.status.toLowerCase() === 'accepted' && (
                         <button
-                          onClick={() => updateOrderStatus(order.id, 'Completed')}
-                          className="px-3 py-1 bg-blue-600 text-white text-xs font-medium rounded hover:bg-blue-700 transition-colors"
+                          onClick={() => updateOrderStatus(order.id, 'Delivered')}
+                          className="px-3 py-1 bg-purple-600 text-white text-xs font-medium rounded hover:bg-purple-700 transition-colors"
                         >
-                          Mark Complete
+                          Mark Delivered
                         </button>
+                      )}
+                      {order.status.toLowerCase() === 'delivered' && (
+                        <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded">
+                          Waiting for confirmation
+                        </span>
+                      )}
+                      {order.status.toLowerCase() === 'received' && (
+                        <span className="px-3 py-1 bg-green-100 text-green-600 text-xs font-medium rounded">
+                          Order completed
+                        </span>
                       )}
                     </div>
                   </div>

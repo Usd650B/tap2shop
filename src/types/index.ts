@@ -35,9 +35,11 @@ export interface Order {
   delivery_location: string;
   quantity: number;
   note?: string;
-  status: 'Pending' | 'Accepted' | 'Completed' | 'Rejected';
+  status: 'Pending' | 'Accepted' | 'Delivered' | 'Received' | 'Completed' | 'Rejected';
   created_at: string;
   updated_at: string;
+  delivered_at?: string;
+  received_at?: string;
 }
 
 export interface OrderWithProduct extends Order {

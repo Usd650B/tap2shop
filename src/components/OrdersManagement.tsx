@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { Order } from '@/types'
+import { generateOrderConfirmationLink } from '@/utils/orderUtils'
 
 export default function OrdersManagement({ 
   orders, 
@@ -36,10 +37,16 @@ export default function OrdersManagement({
         .update({ stock: newStock })
         .eq('id', currentOrder.products.id)
     }
+
+    // Add delivered_at timestamp when marking as delivered
+    const updateData: any = { status: newStatus }
+    if (newStatus === 'Delivered') {
+      updateData.delivered_at = new Date().toISOString()
+    }
     
     const { error } = await supabase
       .from('orders')
-      .update({ status: newStatus })
+      .update(updateData)
       .eq('id', orderId)
     
     if (!error) {
@@ -47,6 +54,17 @@ export default function OrdersManagement({
     }
     
     setUpdating(null)
+  }
+
+  const copyConfirmationLink = async (order: Order) => {
+    const confirmationLink = generateOrderConfirmationLink(order.id, order.customer_contact)
+    try {
+      await navigator.clipboard.writeText(confirmationLink)
+      alert('Confirmation link copied to clipboard! Share this with the customer.')
+    } catch (error) {
+      console.error('Failed to copy link:', error)
+      alert('Failed to copy link. Please copy manually: ' + confirmationLink)
+    }
   }
 
   const handleDelete = async (orderId: string) => {
@@ -126,6 +144,8 @@ export default function OrdersManagement({
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                         order.status === 'Completed' ? 'bg-green-100 text-green-800' :
+                        order.status === 'Received' ? 'bg-green-100 text-green-800' :
+                        order.status === 'Delivered' ? 'bg-purple-100 text-purple-800' :
                         order.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
                         order.status === 'Accepted' ? 'bg-blue-100 text-blue-800' :
                         'bg-red-100 text-red-800'
@@ -151,13 +171,35 @@ export default function OrdersManagement({
                           <button
                             onClick={(e) => {
                               e.stopPropagation()
-                              handleStatusUpdate(order.id, 'Completed')
+                              handleStatusUpdate(order.id, 'Delivered')
                             }}
                             disabled={updating === order.id}
-                            className="text-green-600 hover:text-green-900 disabled:opacity-50"
+                            className="text-purple-600 hover:text-purple-900 disabled:opacity-50"
                           >
-                            {updating === order.id ? 'Updating...' : 'Complete'}
+                            {updating === order.id ? 'Updating...' : 'Mark Delivered'}
                           </button>
+                        )}
+                        {order.status === 'Delivered' && (
+                          <>
+                            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                              Waiting for confirmation
+                            </span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                copyConfirmationLink(order)
+                              }}
+                              className="text-blue-600 hover:text-blue-900"
+                              title="Copy confirmation link for customer"
+                            >
+                              Copy Link
+                            </button>
+                          </>
+                        )}
+                        {order.status === 'Received' && (
+                          <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded">
+                            Order completed
+                          </span>
                         )}
                         <button
                           onClick={(e) => {
@@ -281,6 +323,8 @@ function OrderDetailsModal({
             <label className="block text-sm font-medium text-gray-700">Status</label>
             <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${
               order.status === 'Completed' ? 'bg-green-100 text-green-800' :
+              order.status === 'Received' ? 'bg-green-100 text-green-800' :
+              order.status === 'Delivered' ? 'bg-purple-100 text-purple-800' :
               order.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
               order.status === 'Accepted' ? 'bg-blue-100 text-blue-800' :
               'bg-red-100 text-red-800'
