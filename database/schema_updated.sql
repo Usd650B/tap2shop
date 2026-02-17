@@ -99,17 +99,17 @@ CREATE POLICY "Sellers can update orders for their products" ON orders FOR UPDAT
 -- Customers can view their own orders (by customer_contact)
 CREATE POLICY "Customers can view their own orders" ON orders FOR SELECT USING (
   customer_contact = auth.email() OR 
-  customer_contact = COALESCE(auth.jwt()->>'phone', '') OR
-  customer_contact = COALESCE(auth.jwt()->>'username', '') OR
-  customer_contact = COALESCE(auth.jwt()->>'full_name', '')
+  customer_contact = auth.jwt()->>'phone' OR
+  customer_contact = auth.jwt()->>'username' OR
+  customer_contact = auth.jwt()->>'full_name'
 );
 
 -- Customers can update their own orders (for confirming receipt)
 CREATE POLICY "Customers can update their own orders" ON orders FOR UPDATE USING (
   customer_contact = auth.email() OR 
-  customer_contact = COALESCE(auth.jwt()->>'phone', '') OR
-  customer_contact = COALESCE(auth.jwt()->>'username', '') OR
-  customer_contact = COALESCE(auth.jwt()->>'full_name', '')
+  customer_contact = auth.jwt()->>'phone' OR
+  customer_contact = auth.jwt()->>'username' OR
+  customer_contact = auth.jwt()->>'full_name'
 );
 
 -- Anyone can insert orders (for placing orders)
