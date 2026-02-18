@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { Order } from '@/types'
 import { generateOrderConfirmationLink } from '@/utils/orderUtils'
+import OrderTracker from './OrderTracker'
 
 export default function OrdersManagement({ 
   orders, 
@@ -15,6 +16,7 @@ export default function OrdersManagement({
 }) {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [updating, setUpdating] = useState<string | null>(null)
+  const [trackingOrder, setTrackingOrder] = useState<Order | null>(null)
 
   const handleStatusUpdate = async (orderId: string, newStatus: string) => {
     setUpdating(orderId)
@@ -103,9 +105,6 @@ export default function OrdersManagement({
                     Product
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Quantity
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Total
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -124,22 +123,18 @@ export default function OrdersManagement({
                     onClick={() => setSelectedOrder(order)}
                   >
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {order.id.slice(0, 8)}...
+                      #{order.id.slice(-8)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm">
-                        <div className="font-medium text-gray-900">{order.customer_name}</div>
-                        <div className="text-gray-500">{order.customer_contact}</div>
-                      </div>
+                      <div className="text-sm text-gray-900">{order.customer_name}</div>
+                      <div className="text-sm text-gray-500">{order.customer_contact}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{(order as any).products?.name || 'N/A'}</div>
+                      <div className="text-sm text-gray-900">{order.product?.name || 'Product'}</div>
+                      <div className="text-sm text-gray-500">Qty: {order.quantity}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {order.quantity}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      TZS {(order.quantity * ((order as any).products?.price || 0)).toLocaleString()}
+                      TZS {(order.quantity * (order.product?.price || 0)).toLocaleString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
@@ -155,6 +150,16 @@ export default function OrdersManagement({
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setTrackingOrder(order)
+                          }}
+                          className="text-indigo-600 hover:text-indigo-900"
+                          title="Track Order"
+                        >
+                          Track
+                        </button>
                         {order.status === 'Pending' && (
                           <button
                             onClick={(e) => {
@@ -162,7 +167,7 @@ export default function OrdersManagement({
                               handleStatusUpdate(order.id, 'Accepted')
                             }}
                             disabled={updating === order.id}
-                            className="text-indigo-600 hover:text-indigo-900 disabled:opacity-50"
+                            className="text-green-600 hover:text-green-900 disabled:opacity-50"
                           >
                             {updating === order.id ? 'Updating...' : 'Accept'}
                           </button>
@@ -176,7 +181,7 @@ export default function OrdersManagement({
                             disabled={updating === order.id}
                             className="text-purple-600 hover:text-purple-900 disabled:opacity-50"
                           >
-                            {updating === order.id ? 'Updating...' : 'Mark Delivered'}
+                            {updating === order.id ? 'Updating...' : 'Delivered'}
                           </button>
                         )}
                         {order.status === 'Delivered' && (
@@ -234,6 +239,39 @@ export default function OrdersManagement({
           order={selectedOrder}
           onClose={() => setSelectedOrder(null)}
         />
+      )}
+
+      {/* Order Tracker Modal */}
+      {trackingOrder && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[95vh] overflow-hidden">
+            <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">Order Tracking</h3>
+              <button
+                onClick={() => setTrackingOrder(null)}
+                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="max-h-[calc(95vh-80px)] overflow-y-auto">
+              <OrderTracker 
+                order={trackingOrder} 
+                userType="seller" 
+                onUpdate={() => {
+                  onOrdersUpdate()
+                  // Update the tracking order with fresh data
+                  const updatedOrder = orders.find((o: Order) => o.id === trackingOrder.id)
+                  if (updatedOrder) {
+                    setTrackingOrder(updatedOrder)
+                  }
+                }}
+              />
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

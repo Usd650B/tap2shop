@@ -1,10 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { Package, CheckCircle, Clock, Truck, XCircle, MapPin, User, Phone, Search, Filter, ExternalLink } from 'lucide-react'
+import { Package, CheckCircle, Clock, Truck, XCircle, MapPin, User, Phone, Search, Filter, ExternalLink, Eye } from 'lucide-react'
 import { Order } from '@/types'
 import { generateOrderConfirmationLink } from '@/utils/orderUtils'
 import { supabase } from '@/lib/supabase'
+import OrderTracker from './OrderTracker'
 
 interface CustomerOrdersProps {
   orders: Order[]
@@ -15,6 +16,7 @@ export default function CustomerOrders({ orders, onOrdersUpdate }: CustomerOrder
   const [filter, setFilter] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState('')
   const [confirming, setConfirming] = useState<string | null>(null)
+  const [trackingOrder, setTrackingOrder] = useState<Order | null>(null)
 
   const filteredOrders = orders.filter(order => {
     const matchesFilter = filter === 'all' || order.status.toLowerCase() === filter.toLowerCase()
@@ -234,21 +236,37 @@ export default function CustomerOrders({ orders, onOrdersUpdate }: CustomerOrder
                     </div>
                   )}
 
-                  {/* Action Button */}
-                  {order.status === 'Delivered' && (
-                    <div className="border-t border-gray-200 pt-4">
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <h4 className="font-semibold text-blue-900 mb-2">Confirm Product Delivery</h4>
-                        <p className="text-sm text-blue-700 mb-4">
-                          The seller has marked this order as delivered. Please confirm if you have received the product.
-                        </p>
+                  {/* Action Buttons */}
+                  <div className="border-t border-gray-200 pt-4">
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <button
+                        onClick={() => setTrackingOrder(order)}
+                        className="flex-1 px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2"
+                      >
+                        <Eye className="w-4 h-4" />
+                        Track Order
+                      </button>
+                      
+                      {order.status === 'Delivered' && (
                         <button
                           onClick={() => confirmReceipt(order.id)}
                           disabled={confirming === order.id}
-                          className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="flex-1 px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          {confirming === order.id ? 'Confirming...' : 'Yes, I Received the Product'}
+                          {confirming === order.id ? 'Confirming...' : 'I Received'}
                         </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Status Messages */}
+                  {order.status === 'Delivered' && (
+                    <div className="border-t border-gray-200 pt-4">
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h4 className="font-semibold text-blue-900 mb-2">Ready for Confirmation</h4>
+                        <p className="text-sm text-blue-700">
+                          The seller has marked this order as delivered. Please confirm if you have received the product.
+                        </p>
                       </div>
                     </div>
                   )}
@@ -333,6 +351,39 @@ export default function CustomerOrders({ orders, onOrdersUpdate }: CustomerOrder
           </div>
         )}
       </div>
+
+      {/* Order Tracker Modal */}
+      {trackingOrder && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[95vh] overflow-hidden">
+            <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">Order Tracking</h3>
+              <button
+                onClick={() => setTrackingOrder(null)}
+                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="max-h-[calc(95vh-80px)] overflow-y-auto">
+              <OrderTracker 
+                order={trackingOrder} 
+                userType="customer" 
+                onUpdate={() => {
+                  onOrdersUpdate()
+                  // Update the tracking order with fresh data
+                  const updatedOrder = orders.find(o => o.id === trackingOrder.id)
+                  if (updatedOrder) {
+                    setTrackingOrder(updatedOrder)
+                  }
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
