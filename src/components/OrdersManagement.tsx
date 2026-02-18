@@ -5,7 +5,6 @@ import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { Order } from '@/types'
 import { generateOrderConfirmationLink } from '@/utils/orderUtils'
-import OrderTracker from './OrderTracker'
 
 export default function OrdersManagement({ 
   orders, 
@@ -16,7 +15,6 @@ export default function OrdersManagement({
 }) {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [updating, setUpdating] = useState<string | null>(null)
-  const [trackingOrder, setTrackingOrder] = useState<Order | null>(null)
 
   const handleStatusUpdate = async (orderId: string, newStatus: string) => {
     setUpdating(orderId)
@@ -150,16 +148,6 @@ export default function OrdersManagement({
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            setTrackingOrder(order)
-                          }}
-                          className="text-indigo-600 hover:text-indigo-900"
-                          title="Track Order"
-                        >
-                          Track
-                        </button>
                         {order.status === 'Pending' && (
                           <button
                             onClick={(e) => {
@@ -181,13 +169,13 @@ export default function OrdersManagement({
                             disabled={updating === order.id}
                             className="text-purple-600 hover:text-purple-900 disabled:opacity-50"
                           >
-                            {updating === order.id ? 'Updating...' : 'Delivered'}
+                            {updating === order.id ? 'Updating...' : 'I Delivered'}
                           </button>
                         )}
                         {order.status === 'Delivered' && (
                           <>
                             <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                              Waiting for confirmation
+                              Waiting for customer confirmation
                             </span>
                             <button
                               onClick={(e) => {
@@ -239,39 +227,6 @@ export default function OrdersManagement({
           order={selectedOrder}
           onClose={() => setSelectedOrder(null)}
         />
-      )}
-
-      {/* Order Tracker Modal */}
-      {trackingOrder && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[95vh] overflow-hidden">
-            <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">Order Tracking</h3>
-              <button
-                onClick={() => setTrackingOrder(null)}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            <div className="max-h-[calc(95vh-80px)] overflow-y-auto">
-              <OrderTracker 
-                order={trackingOrder} 
-                userType="seller" 
-                onUpdate={() => {
-                  onOrdersUpdate()
-                  // Update the tracking order with fresh data
-                  const updatedOrder = orders.find((o: Order) => o.id === trackingOrder.id)
-                  if (updatedOrder) {
-                    setTrackingOrder(updatedOrder)
-                  }
-                }}
-              />
-            </div>
-          </div>
-        </div>
       )}
     </div>
   )
