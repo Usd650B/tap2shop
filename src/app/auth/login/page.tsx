@@ -71,7 +71,7 @@ export default function AdminLoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="admin@shopinpocket.co.tz"
+                  placeholder="admin@sip.co.tz"
                 />
               </div>
             </div>
@@ -132,8 +132,8 @@ export default function AdminLoginPage() {
             
             <div className="mt-4 text-center text-xs text-gray-500">
               <p className="font-semibold text-gray-700">Default Admin Credentials:</p>
-              <p>Email: SHOPINPOCKETKING@shopinpocket.co.tz</p>
-              <p>Password: ShopInPocket1978</p>
+              <p>Email: SIPKING@sip.co.tz</p>
+              <p>Password: SIP1978</p>
               <p className="mt-2 text-amber-600">⚠️ Please change password after first login</p>
             </div>
           </div>

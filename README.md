@@ -1,4 +1,4 @@
-# ShopInPocket 🛍
+# SIP 🛍
 
 A simple social media shop platform for Tanzanian entrepreneurs to create beautiful online stores and connect with customers.
 
@@ -6,6 +6,7 @@ A simple social media shop platform for Tanzanian entrepreneurs to create beauti
 
 - **🏪 Create Your Shop**: Set up your personalized online store in minutes
 - **📱 Add Products**: Upload products with images, prices, and descriptions
+- **📏 Size & Color Options**: Add multiple sizes and colors to products
 - **💰 Manage Orders**: View and manage customer orders in real-time
 - **🎨 Custom Branding**: Choose your shop colors and style
 - **📊 Analytics**: Track sales and performance

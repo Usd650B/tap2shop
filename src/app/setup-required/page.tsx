@@ -63,7 +63,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here`}
                   Run the script from <code className="bg-gray-100 px-2 py-1 rounded">database/complete_setup.sql</code>
                 </li>
                 <li>
-                  Create your admin account with email: <code className="bg-gray-100 px-2 py-1 rounded">SHOPINPOCKETKING@shopinpocket.co.tz</code>
+                  Create your admin account with email: <code className="bg-gray-100 px-2 py-1 rounded">SIPKING@sip.co.tz</code>
                 </li>
               </ol>
             </div>
@@ -78,7 +78,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here`}
                 </Link>
                 
                 <a
-                  href="https://github.com/Usd650B/shopinpocket"
+                  href="https://github.com/Usd650B/sip"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"

@@ -25,7 +25,7 @@ async function getUsers() {
     // Transform the data to represent users
     const users = shops?.map(shop => ({
       id: shop.user_id,
-      email: `user_${shop.user_id.slice(0, 8)}@shopinpocket.co.tz`,
+      email: `user_${shop.user_id.slice(0, 8)}@sip.co.tz`,
       created_at: shop.created_at,
       last_sign_in_at: shop.created_at,
       user_metadata: {

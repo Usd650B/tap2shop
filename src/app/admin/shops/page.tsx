@@ -18,7 +18,7 @@ async function getShops() {
     const shopsWithUsers = shops?.map(shop => ({
       ...shop,
       user: {
-        email: `user_${shop.user_id.slice(0, 8)}@shopinpocket.co.tz`,
+        email: `user_${shop.user_id.slice(0, 8)}@sip.co.tz`,
         user_metadata: {
           full_name: `Shop Owner`,
           shop_name: shop.name

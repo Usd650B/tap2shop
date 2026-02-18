@@ -32,8 +32,8 @@ export async function middleware(request: NextRequest) {
 
     // Check if user has admin role
     const isAdmin = user.user_metadata?.role === 'admin' || 
-                   user.email === 'SHOPINPOCKETKING@shopinpocket.co.tz' ||
-                   user.email === 'admin@shopinpocket.co.tz'
+                   user.email === 'SIPKING@sip.co.tz' ||
+                   user.email === 'admin@sip.co.tz'
 
     if (!isAdmin) {
       // Redirect to unauthorized page

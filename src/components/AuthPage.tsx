@@ -46,7 +46,7 @@ export default function AuthPage() {
             {isSignUp ? 'Create your shop' : 'Sign in to your shop'}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Tap2shop - Your social media shop platform
+            SIP - Your social media shop platform
           </p>
         </div>
         

@@ -27,7 +27,7 @@ export default function SettingsPage() {
               </label>
               <input
                 type="text"
-                defaultValue="ShopInPocket"
+                defaultValue="SIP"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
@@ -47,7 +47,7 @@ export default function SettingsPage() {
               </label>
               <input
                 type="email"
-                defaultValue="support@shopinpocket.co.tz"
+                defaultValue="support@sip.co.tz"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
