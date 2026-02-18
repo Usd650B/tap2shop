@@ -162,11 +162,49 @@ function ProductForm({
     price: product?.price?.toString() || '',
     description: product?.description || '',
     image_url: product?.image_url || '',
-    stock: product?.stock || 0
+    stock: product?.stock || 0,
+    sizes: product?.sizes || [],
+    colors: product?.colors || []
   })
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [message, setMessage] = useState('')
+  const [newSize, setNewSize] = useState('')
+  const [newColor, setNewColor] = useState('')
+
+  const addSize = () => {
+    if (newSize.trim() && !formData.sizes.includes(newSize.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        sizes: [...prev.sizes, newSize.trim()]
+      }))
+      setNewSize('')
+    }
+  }
+
+  const removeSize = (sizeToRemove: string) => {
+    setFormData(prev => ({
+      ...prev,
+      sizes: prev.sizes.filter(size => size !== sizeToRemove)
+    }))
+  }
+
+  const addColor = () => {
+    if (newColor.trim() && !formData.colors.includes(newColor.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        colors: [...prev.colors, newColor.trim()]
+      }))
+      setNewColor('')
+    }
+  }
+
+  const removeColor = (colorToRemove: string) => {
+    setFormData(prev => ({
+      ...prev,
+      colors: prev.colors.filter(color => color !== colorToRemove)
+    }))
+  }
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -298,6 +336,92 @@ function ProductForm({
                 alt="Product preview" 
                 className="mt-2 h-20 w-auto rounded-lg border border-gray-200"
               />
+            )}
+          </div>
+        </div>
+
+        {/* Sizes Section */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-3">Available Sizes</label>
+          <div className="space-y-3">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Enter size (e.g., S, M, L, XL, XXL)"
+                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                value={newSize}
+                onChange={(e) => setNewSize(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSize())}
+              />
+              <button
+                type="button"
+                onClick={addSize}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              >
+                Add Size
+              </button>
+            </div>
+            {formData.sizes.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {formData.sizes.map((size, index) => (
+                  <span
+                    key={index}
+                    className="inline-flex items-center gap-1 px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm"
+                  >
+                    {size}
+                    <button
+                      type="button"
+                      onClick={() => removeSize(size)}
+                      className="text-indigo-600 hover:text-indigo-800"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Colors Section */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-3">Available Colors</label>
+          <div className="space-y-3">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Enter color (e.g., Red, Blue, Black, White)"
+                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                value={newColor}
+                onChange={(e) => setNewColor(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addColor())}
+              />
+              <button
+                type="button"
+                onClick={addColor}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              >
+                Add Color
+              </button>
+            </div>
+            {formData.colors.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {formData.colors.map((color, index) => (
+                  <span
+                    key={index}
+                    className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm"
+                  >
+                    {color}
+                    <button
+                      type="button"
+                      onClick={() => removeColor(color)}
+                      className="text-purple-600 hover:text-purple-800"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
             )}
           </div>
         </div>

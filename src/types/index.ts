@@ -22,6 +22,8 @@ export interface Product {
   description?: string;
   image_url?: string;
   stock: number;
+  sizes?: string[];
+  colors?: string[];
   created_at: string;
   updated_at: string;
 }
@@ -34,6 +36,8 @@ export interface Order {
   delivery_address: string;
   delivery_location: string;
   quantity: number;
+  selected_size?: string;
+  selected_color?: string;
   note?: string;
   status: 'Pending' | 'Accepted' | 'Delivered' | 'Received' | 'Completed' | 'Rejected';
   created_at: string;

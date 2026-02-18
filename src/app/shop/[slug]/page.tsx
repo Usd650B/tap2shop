@@ -39,7 +39,7 @@ export default function ShopPage({ params }: { params: Promise<{ slug: string }>
           
           const { data: productsData, error: productsError } = await supabase
             .from('products')
-            .select('id, shop_id, name, price, description, image_url, created_at, updated_at, stock')
+            .select('id, shop_id, name, price, description, image_url, created_at, updated_at, stock, sizes, colors')
             .eq('shop_id', shopData.id)
           
           if (productsError) throw productsError
@@ -149,7 +149,7 @@ function ShopClient({ shop, products: initialProducts }: { shop: Shop; products:
     try {
       const { data: productsData, error } = await supabase
         .from('products')
-        .select('id, shop_id, name, price, description, image_url, created_at, updated_at, stock')
+        .select('id, shop_id, name, price, description, image_url, created_at, updated_at, stock, sizes, colors')
         .eq('shop_id', shop.id)
       
       if (error) throw error
@@ -547,6 +547,40 @@ function ShopClient({ shop, products: initialProducts }: { shop: Shop; products:
                   <span className="text-sm text-green-600 font-semibold">In Stock - {selectedProduct.stock || 0} available</span>
                 </div>
 
+                {/* Available Sizes */}
+                {selectedProduct.sizes && selectedProduct.sizes.length > 0 && (
+                  <div className="mb-4">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-2">Available Sizes</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedProduct.sizes.map((size, index) => (
+                        <span
+                          key={index}
+                          className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm font-medium border border-gray-300"
+                        >
+                          {size}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Available Colors */}
+                {selectedProduct.colors && selectedProduct.colors.length > 0 && (
+                  <div className="mb-4">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-2">Available Colors</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedProduct.colors.map((color, index) => (
+                        <span
+                          key={index}
+                          className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium border border-purple-300"
+                        >
+                          {color}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Description */}
                 {selectedProduct.description && (
                   <div className="mb-4">
@@ -651,6 +685,8 @@ function OrderForm({
     delivery_address: '',
     delivery_location: '',
     quantity: 1,
+    selected_size: '',
+    selected_color: '',
     note: ''
   })
   const [loading, setLoading] = useState(false)
@@ -667,6 +703,8 @@ function OrderForm({
       customer_contact: formData.customer_contact.trim(),
       delivery_address: formData.delivery_address.trim(),
       quantity: Number(formData.quantity) || 1,
+      selected_size: formData.selected_size.trim() || null,
+      selected_color: formData.selected_color.trim() || null,
       note: formData.note.trim() || null
     }
     
@@ -699,6 +737,8 @@ function OrderForm({
             delivery_address: '',
             delivery_location: '',
             quantity: 1,
+            selected_size: '',
+            selected_color: '',
             note: ''
           })
         }, 2000)
@@ -880,6 +920,46 @@ function OrderForm({
                   </div>
                   <p className="text-xs text-gray-500 mt-1">Available stock: {product.stock || 0} items</p>
                 </div>
+
+                {/* Size Selection */}
+                {product.sizes && product.sizes.length > 0 && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Select Size <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      required={product.sizes && product.sizes.length > 0}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                      value={formData.selected_size}
+                      onChange={(e) => setFormData({ ...formData, selected_size: e.target.value })}
+                    >
+                      <option value="">Select size</option>
+                      {product.sizes.map((size, index) => (
+                        <option key={index} value={size}>{size}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Color Selection */}
+                {product.colors && product.colors.length > 0 && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Select Color <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      required={product.colors && product.colors.length > 0}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                      value={formData.selected_color}
+                      onChange={(e) => setFormData({ ...formData, selected_color: e.target.value })}
+                    >
+                      <option value="">Select color</option>
+                      {product.colors.map((color, index) => (
+                        <option key={index} value={color}>{color}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
