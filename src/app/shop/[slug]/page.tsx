@@ -663,16 +663,16 @@ function OrderForm({
 
     const orderData: any = {
       product_id: product.id,
-      customer_name: formData.customer_name,
-      customer_contact: formData.customer_contact,
-      delivery_address: formData.delivery_address,
-      quantity: formData.quantity,
-      note: formData.note || null
+      customer_name: formData.customer_name.trim(),
+      customer_contact: formData.customer_contact.trim(),
+      delivery_address: formData.delivery_address.trim(),
+      quantity: Number(formData.quantity) || 1,
+      note: formData.note.trim() || null
     }
     
     // Only include delivery_location if it has a value
     if (formData.delivery_location.trim()) {
-      orderData.delivery_location = formData.delivery_location
+      orderData.delivery_location = formData.delivery_location.trim()
     }
 
     console.log('Submitting order:', orderData)
@@ -713,132 +713,285 @@ function OrderForm({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto p-5 shadow-xl">
-        <div className="flex items-start space-x-3 mb-4">
-          {product.image_url && (
-            <img 
-              src={product.image_url} 
-              alt={product.name}
-              className="w-16 h-16 object-cover rounded-lg border border-gray-200 flex-shrink-0"
-            />
-          )}
-          <div className="flex-1">
-            <h2 className="text-lg font-bold text-gray-900 mb-1">Order {product.name}</h2>
-            {product.description && (
-              <p className="text-xs text-gray-600 line-clamp-2">{product.description}</p>
-            )}
-            <div className="bg-gray-50 rounded-md p-2 mt-2">
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-600">Total:</span>
-                <span className="text-sm font-bold text-indigo-600">
-                  TZS {(product.price * formData.quantity).toFixed(2)}
-                </span>
-              </div>
+      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[95vh] overflow-hidden shadow-2xl">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold">Complete Your Order</h3>
+              <p className="text-sm opacity-90">{product.name}</p>
             </div>
+            <button
+              onClick={onClose}
+              className="text-white/80 hover:text-white p-2 rounded-lg hover:bg-white/20 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12M9 12l2 2M6 6l12 12" />
+              </svg>
+            </button>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-3">
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Your Name</label>
-            <input
-              type="text"
-              required
-              className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              value={formData.customer_name}
-              onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })}
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Contact (WhatsApp/Email)</label>
-            <input
-              type="text"
-              required
-              className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              value={formData.customer_contact}
-              onChange={(e) => setFormData({ ...formData, customer_contact: e.target.value })}
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Delivery Address</label>
-            <textarea
-              rows={2}
-              required
-              className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              value={formData.delivery_address}
-              onChange={(e) => setFormData({ ...formData, delivery_address: e.target.value })}
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Delivery Location/Area (Optional)</label>
-            <input
-              type="text"
-              placeholder="e.g., Kinondoni, Dar es Salaam"
-              className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              value={formData.delivery_location}
-              onChange={(e) => setFormData({ ...formData, delivery_location: e.target.value })}
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Specify your delivery area for faster service
-            </p>
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Quantity</label>
-            <input
-              type="number"
-              min="1"
-              required
-              className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              value={formData.quantity}
-              onChange={(e) => setFormData({ ...formData, quantity: parseInt(e.target.value) || 1 })}
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Note (Optional)</label>
-            <textarea
-              rows={2}
-              className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              value={formData.note}
-              onChange={(e) => setFormData({ ...formData, note: e.target.value })}
-            />
-          </div>
-
-          <div className="bg-blue-50 border border-blue-200 rounded-md p-2">
-            <p className="text-xs text-blue-800">
-              <strong>Important:</strong> Payment and delivery are arranged directly with the seller.
-            </p>
-          </div>
-
-          {message && (
-            <div className={`text-xs p-2 rounded-md ${
-              message.includes('Error') || message.includes('Network') ? 'text-red-600 bg-red-50 border border-red-200' : 'text-green-600 bg-green-50 border border-green-200'
-            }`}>
-              {message}
+        {/* Content */}
+        <div className="p-6 max-h-[calc(95vh-120px)] overflow-y-auto">
+          {/* Product Summary */}
+          <div className="bg-gray-50 rounded-lg p-4 mb-6">
+            <div className="flex items-start gap-4">
+              {product.image_url ? (
+                <img 
+                  src={product.image_url} 
+                  alt={product.name}
+                  className="w-20 h-20 object-cover rounded-lg border-2 border-white shadow-sm"
+                />
+              ) : (
+                <div className="w-20 h-20 bg-gray-200 rounded-lg border-2 border-gray-300 flex items-center justify-center">
+                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 6h.01" />
+                  </svg>
+                </div>
+              )}
+              <div className="flex-1">
+                <h4 className="font-semibold text-gray-900 text-lg">{product.name}</h4>
+                <p className="text-sm text-gray-600 mb-2">{product.description}</p>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-bold text-indigo-600">TZS {product.price}</span>
+                  <span className="text-sm text-gray-500">/{product.name}</span>
+                </div>
+              </div>
             </div>
-          )}
-
-          <div className="flex space-x-2">
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 bg-indigo-600 text-white py-2 px-3 rounded-md hover:bg-indigo-700 disabled:opacity-50 text-sm font-medium"
-            >
-              {loading ? 'Placing...' : 'Place Order'}
-            </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 bg-gray-200 text-gray-800 py-2 px-3 rounded-md hover:bg-gray-300 text-sm font-medium"
-            >
-              Cancel
-            </button>
           </div>
-        </form>
+
+          {/* Order Form */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Left Column - Customer Info */}
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Full Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Enter your full name"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                    value={formData.customer_name}
+                    onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    WhatsApp Number <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2-2V5a2 2 0 002-2zm0 0h14a3 3 0 006-3 3v6a3 3 0 006-3s2.242 0L15 12a3 3 0 006-3 3v6a3 3 0 002.242 0L6 8a3 3 0 006-3 3v6a3 3 0 002.242 0z" />
+                      </svg>
+                    </div>
+                    <input
+                      type="tel"
+                      required
+                      placeholder="+255 123 456 789"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                      value={formData.customer_contact}
+                      onChange={(e) => setFormData({ ...formData, customer_contact: e.target.value })}
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">We'll use this to contact you about your order</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Delivery Address <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    rows={3}
+                    required
+                    placeholder="Enter your complete delivery address"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors resize-none"
+                    value={formData.delivery_address}
+                    onChange={(e) => setFormData({ ...formData, delivery_address: e.target.value })}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Delivery Region/Area
+                  </label>
+                  <select
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                    value={formData.delivery_location}
+                    onChange={(e) => setFormData({ ...formData, delivery_location: e.target.value })}
+                  >
+                    <option value="">Select your region</option>
+                    <option value="Dar es Salaam">Dar es Salaam</option>
+                    <option value="Kinondoni">Kinondoni</option>
+                    <option value="Mwanza">Mwanza</option>
+                    <option value="Arusha">Arusha</option>
+                    <option value="Mbeya">Mbeya</option>
+                    <option value="Tanga">Tanga</option>
+                    <option value="Morogoro">Morogoro</option>
+                    <option value="Tabora">Tabora</option>
+                    <option value="Iringa">Iringa</option>
+                    <option value="Kigoma">Kigoma</option>
+                    <option value="Moshi">Moshi</option>
+                    <option value="Dodoma">Dodoma</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  <p className="text-xs text-gray-500 mt-1">Helps us provide faster delivery service</p>
+                </div>
+              </div>
+
+              {/* Right Column - Order Details */}
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Quantity <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, quantity: Math.max(1, (formData.quantity || 1) - 1) })}
+                      className="absolute left-2 top-1/2 px-3 py-2 bg-gray-100 text-gray-600 rounded-l-md hover:bg-gray-200 transition-colors"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                      </svg>
+                    </button>
+                    <input
+                      type="number"
+                      min="1"
+                      required
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                      value={formData.quantity}
+                      onChange={(e) => setFormData({ ...formData, quantity: parseInt(e.target.value) || 1 })}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, quantity: Math.min(10, (formData.quantity || 1) + 1) })}
+                      className="absolute right-2 top-1/2 px-3 py-2 bg-gray-100 text-gray-600 rounded-r-md hover:bg-gray-200 transition-colors"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 12h16m-4 8h16m-4 8v-12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Available stock: {product.stock || 0} items</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Special Instructions (Optional)
+                  </label>
+                  <textarea
+                    rows={3}
+                    placeholder="Any special delivery instructions or requests..."
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors resize-none"
+                    value={formData.note}
+                    onChange={(e) => setFormData({ ...formData, note: e.target.value })}
+                  />
+                </div>
+
+                {/* Price Summary */}
+                <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-indigo-900 mb-3">Order Summary</h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Unit Price:</span>
+                      <span className="font-semibold text-gray-900">TZS {product.price}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Quantity:</span>
+                      <span className="font-semibold text-gray-900">{formData.quantity || 1}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600">Subtotal:</span>
+                      <span className="font-semibold text-gray-900">TZS {(product.price * (formData.quantity || 1)).toFixed(2)}</span>
+                    </div>
+                    <div className="border-t border-indigo-200 pt-2 mt-2">
+                      <div className="flex justify-between">
+                        <span className="text-lg font-bold text-indigo-600">Total: TZS {(product.price * (formData.quantity || 1)).toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Message Display */}
+            {message && (
+              <div className={`p-4 rounded-lg mb-6 ${
+                message.includes('Error') || message.includes('Network') 
+                  ? 'bg-red-50 border border-red-200 text-red-800' 
+                  : 'bg-green-50 border border-green-200 text-green-800'
+              }`}>
+                <div className="flex items-start gap-3">
+                  {message.includes('Error') || message.includes('Network') ? (
+                    <svg className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h8m-4 8v12M12 20l-4-4m6 4h6m-4 8v6M12 16l-4-4m6 4h6m-4 8v6" />
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 4h6m-4 8v6m-6 6h6m-4 8v6m11 5l-5-5-5 5 5 5 5z" />
+                    </svg>
+                  )}
+                  <div>
+                    <p className="text-sm font-medium">{message}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 pt-6 border-t border-gray-200">
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex-1 bg-indigo-600 text-white py-3 px-6 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium shadow-lg"
+              >
+                {loading ? (
+                  <div className="flex items-center justify-center">
+                    <svg className="animate-spin h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v12a8 8 0 00-8 8v4a8 8 0 002-2 2h4a2 2 0 002-2v-4a2 2 0 00-2-2H6a2 2 0 00-2-2V4a2 2 0 002-2z" />
+                    </svg>
+                    Placing Order...
+                  </div>
+                ) : (
+                  <div>
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 6h.01" />
+                    </svg>
+                    Place Order
+                  </div>
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* Footer */}
+        <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
+          <div className="text-center text-xs text-gray-500">
+            <p className="mb-2">
+              <strong>Payment & Delivery:</strong> Arranged directly with seller
+            </p>
+            <p>
+              <strong>Delivery Time:</strong> 2-3 business days
+            </p>
+            <p className="text-gray-400">
+              Your order will be confirmed by the seller. You'll receive updates via WhatsApp/Email.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   )
