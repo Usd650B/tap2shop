@@ -183,22 +183,22 @@ function ShopClient({ shop, products: initialProducts }: { shop: Shop; products:
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="shadow-lg" style={{ backgroundColor: shop.primary_color || '#4F46E5' }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
             {/* Left Section - Logo and Shop Info */}
-            <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-4 sm:space-x-6">
               {shop.logo_url && (
                 <div className="flex-shrink-0">
                   <img 
                     src={shop.logo_url} 
                     alt={shop.name}
-                    className="h-20 w-20 object-cover rounded-xl shadow-lg border-2 border-white/20"
+                    className="h-16 w-16 sm:h-20 sm:w-20 object-cover rounded-xl shadow-lg border-2 border-white/20"
                   />
                 </div>
               )}
-              <div>
+              <div className="flex-1 min-w-0">
                 <h1 
-                  className="text-3xl font-bold mb-1"
+                  className="text-2xl sm:text-3xl font-bold mb-1 truncate"
                   style={{ 
                     color: 'white',
                     fontFamily: shop.font_style === 'elegant' ? 'serif' : 
@@ -209,7 +209,7 @@ function ShopClient({ shop, products: initialProducts }: { shop: Shop; products:
                   {shop.name}
                 </h1>
                 {shop.description && (
-                  <p className="text-lg opacity-90 max-w-md" style={{ color: 'white' }}>
+                  <p className="text-sm sm:text-lg opacity-90 max-w-md line-clamp-2 sm:line-clamp-none" style={{ color: 'white' }}>
                     {shop.description}
                   </p>
                 )}
@@ -217,8 +217,8 @@ function ShopClient({ shop, products: initialProducts }: { shop: Shop; products:
             </div>
 
             {/* Right Section - Contact and CTA */}
-            <div className="text-right">
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+            <div className="text-left sm:text-right">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-4 border border-white/20">
                 <p className="text-sm font-medium mb-2" style={{ color: 'white' }}>
                   📞 Contact Seller
                 </p>
