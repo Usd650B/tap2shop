@@ -1,5 +1,5 @@
 -- ========================================
--- SHOPINPOCKET ADMIN DASHBOARD SETUP
+-- SIP ADMIN DASHBOARD SETUP
 -- Run this in your Supabase SQL Editor
 -- ========================================
 
@@ -28,6 +28,8 @@ CREATE TABLE IF NOT EXISTS products (
   description TEXT,
   image_url TEXT,
   stock INTEGER DEFAULT 0,
+  sizes TEXT[] DEFAULT '{}',
+  colors TEXT[] DEFAULT '{}',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -40,10 +42,14 @@ CREATE TABLE IF NOT EXISTS orders (
   delivery_address TEXT NOT NULL,
   delivery_location TEXT NOT NULL,
   quantity INTEGER NOT NULL DEFAULT 1,
+  selected_size TEXT,
+  selected_color TEXT,
   note TEXT,
-  status TEXT NOT NULL DEFAULT 'Pending' CHECK (status IN ('Pending', 'Accepted', 'Completed', 'Rejected')),
+  status TEXT NOT NULL DEFAULT 'Pending' CHECK (status IN ('Pending', 'Accepted', 'Delivered', 'Received', 'Completed', 'Rejected')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  delivered_at TIMESTAMP WITH TIME ZONE,
+  received_at TIMESTAMP WITH TIME ZONE
 );
 
 -- 2. Enable Row Level Security
