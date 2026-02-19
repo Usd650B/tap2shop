@@ -19,7 +19,7 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   const isAdmin = user?.user_metadata?.role === 'admin' || 
-                 user?.email === 'admin@shopinpocket.co.tz'
+                 user?.email === 'admin@sip.co.tz'
 
   useEffect(() => {
     // Get initial session
