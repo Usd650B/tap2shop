@@ -22,20 +22,37 @@ export default function OrdersManagement({
     // Get current order to check stock
     const { data: currentOrder } = await supabase
       .from('orders')
-      .select('*, products(*)')
+      .select(`
+        *,
+        product:products!inner(
+          id,
+          name,
+          price,
+          image_url,
+          stock,
+          sizes,
+          colors,
+          shop:shops!inner(
+            id,
+            name,
+            slug,
+            user_id
+          )
+        )
+      `)
       .eq('id', orderId)
       .single()
     
-    if (currentOrder && newStatus === 'Accepted' && currentOrder.products) {
+    if (currentOrder && newStatus === 'Accepted' && currentOrder.product) {
       // Reduce stock when order is accepted
-      const currentStock = currentOrder.products.stock || 0
+      const currentStock = currentOrder.product.stock || 0
       const quantity = currentOrder.quantity || 1
       const newStock = Math.max(0, currentStock - quantity)
       
       await supabase
         .from('products')
         .update({ stock: newStock })
-        .eq('id', currentOrder.products.id)
+        .eq('id', currentOrder.product.id)
     }
 
     // Add delivered_at timestamp when marking as delivered
@@ -308,7 +325,7 @@ function OrderDetailsModal({
           <div>
             <label className="block text-sm font-medium text-gray-700">Total Price</label>
             <p className="mt-1 text-sm font-semibold text-gray-900">
-              TZS {(order.quantity * ((order as any).products?.price || 0)).toLocaleString()}
+              TZS {(order.quantity * (order.product?.price || 0)).toLocaleString()}
             </p>
           </div>
 
