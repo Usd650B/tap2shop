@@ -42,7 +42,14 @@ export default function AuthPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <div className="flex items-center justify-center mb-8">
+            <img 
+              src="/images/sip-logo.svg" 
+              alt="SIP Logo"
+              className="h-12 w-12"
+            />
+          </div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-red-600">
             {isSignUp ? 'Create your shop' : 'Sign in to your shop'}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">

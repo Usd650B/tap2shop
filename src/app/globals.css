@@ -1,24 +1,6 @@
-@import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Line clamp utilities for text truncation */
 .line-clamp-1 {
@@ -42,43 +24,64 @@ body {
   -webkit-line-clamp: 3;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-poppins), system-ui, -apple-system, sans-serif;
-  font-weight: 600;
+/* Demonic styling for SIP */
+.demonic-glow {
+  text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+  filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.3));
 }
 
-.text-sm {
-  font-size: 0.875rem;
+.demonic-border {
+  border: 2px solid rgba(255, 0, 0, 0.3);
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
 }
 
-.text-xs {
-  font-size: 0.75rem;
+.demonic-bg {
+  background: linear-gradient(135deg, rgba(139, 0, 0, 0.1) 0%, rgba(75, 0, 0, 0.1) 100%);
 }
 
-.text-lg {
-  font-size: 1.125rem;
+/* Hidden demonic symbols */
+.demonic-pattern {
+  background-image: 
+    repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255, 0, 0, 0.05) 35px, rgba(255, 0, 0, 0.05) 70px),
+    repeating-linear-gradient(-45deg, transparent, transparent 35px, rgba(139, 0, 0, 0.03) 35px, rgba(139, 0, 0, 0.03) 70px);
 }
 
-.text-xl {
+/* Big and beautiful styling */
+.big-title {
+  font-size: 4rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #8B0000 0%, #FF0000 50%, #8B0000 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+}
+
+.big-button {
   font-size: 1.25rem;
+  font-weight: 700;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #8B0000 0%, #FF0000 100%);
+  border: 2px solid #FF0000;
+  box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3);
+  transition: all 0.3s ease;
 }
 
-.text-2xl {
-  font-size: 1.5rem;
+.big-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(255, 0, 0, 0.5);
 }
 
-.text-3xl {
-  font-size: 1.875rem;
+/* Hidden sigil animation */
+@keyframes sigil-pulse {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.3; }
 }
 
-.text-4xl {
-  font-size: 2.25rem;
+.sigil-animation {
+  animation: sigil-pulse 4s ease-in-out infinite;
 }
 
-.text-5xl {
-  font-size: 3rem;
-}
-
-.text-6xl {
-  font-size: 3.75rem;
+body {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a0000 50%, #0a0a0a 100%);
 }
