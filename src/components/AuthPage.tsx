@@ -49,7 +49,7 @@ export default function AuthPage() {
               className="h-12 w-12"
             />
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-red-600">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-indigo-600">
             {isSignUp ? 'Create your shop' : 'Sign in to your shop'}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">

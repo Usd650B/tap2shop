@@ -37,7 +37,7 @@ function LandingPage() {
                 alt="SIP Logo"
                 className="h-8 w-8 sm:h-10 sm:w-10"
               />
-              <h1 className="text-lg sm:text-xl font-bold text-red-600 font-poppins">SIP</h1>
+              <h1 className="text-lg sm:text-xl font-bold text-indigo-600 font-poppins">SIP</h1>
               <span className="ml-2 text-xs text-gray-500 hidden sm:inline">Tanzania</span>
             </div>
             <button
@@ -56,7 +56,7 @@ function LandingPage() {
           <h1 className="text-4xl font-bold text-gray-900 mb-4 big-title demonic-glow">
             Create Your <span style={{ color: '#FF0000' }} className="big-title">SIP</span> Store
           </h1>
-          <span className="block text-red-600 big-title">Made Sinister</span>
+          <span className="block text-indigo-600 big-title">Made Simple</span>
           <p className="text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 max-w-3xl mx-auto font-light">
             Create a beautiful online shop for your social media customers. 
             Connect directly with your buyers and grow your business.

@@ -270,7 +270,7 @@ export default function Dashboard() {
                 alt="SIP Logo"
                 className="h-6 w-6"
               />
-              <h1 className="text-lg font-bold text-red-600">SIP</h1>
+              <h1 className="text-lg font-bold text-indigo-600">SIP</h1>
             </div>
             <button
               onClick={copyShopLink}
