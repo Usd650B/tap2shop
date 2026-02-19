@@ -32,11 +32,6 @@ function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4 sm:py-6">
             <div className="flex items-center">
-              <img 
-                src="/images/sip-logo.svg" 
-                alt="SIP Logo"
-                className="h-8 w-8 sm:h-10 sm:w-10"
-              />
               <h1 className="text-lg sm:text-xl font-bold text-indigo-600 font-poppins">SIP</h1>
               <span className="ml-2 text-xs text-gray-500 hidden sm:inline">Tanzania</span>
             </div>
@@ -53,10 +48,10 @@ function LandingPage() {
       {/* Hero Section */}
       <section className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 big-title demonic-glow">
-            Create Your <span style={{ color: '#FF0000' }} className="big-title">SIP</span> Store
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            Create Your <span style={{ color: '#4F46E5' }}>SIP</span> Store
           </h1>
-          <span className="block text-indigo-600 big-title">Made Simple</span>
+          <span className="block text-indigo-600">Made Simple</span>
           <p className="text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 max-w-3xl mx-auto font-light">
             Create a beautiful online shop for your social media customers. 
             Connect directly with your buyers and grow your business.
@@ -64,13 +59,13 @@ function LandingPage() {
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
             <button
               onClick={() => window.location.href = '#auth'}
-              className="big-button demonic-glow demonic-border text-white font-poppins w-full sm:w-auto"
+              className="px-4 sm:px-6 py-3 text-sm sm:text-base font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors font-poppins w-full sm:w-auto"
             >
               Start Your Shop
             </button>
             <button
               onClick={() => window.location.href = '#auth'}
-              className="px-4 sm:px-6 py-3 text-sm sm:text-base font-semibold text-red-600 bg-white border-2 border-red-600 rounded-lg hover:bg-red-50 transition-colors font-poppins w-full sm:w-auto demonic-border"
+              className="px-4 sm:px-6 py-3 text-sm sm:text-base font-semibold text-indigo-600 bg-white border border-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors font-poppins w-full sm:w-auto"
             >
               Learn More
             </button>

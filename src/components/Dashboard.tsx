@@ -261,21 +261,13 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col lg:flex-row">
       {/* Mobile Header */}
-      <div className="lg:hidden bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
-        <div className="px-4 py-3">
+      <div className="relative bg-white w-80 max-w-full h-full shadow-xl">
+        <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <img 
-                src="/images/sip-logo.svg" 
-                alt="SIP Logo"
-                className="h-6 w-6"
-              />
-              <h1 className="text-lg font-bold text-indigo-600">SIP</h1>
-            </div>
+            <h1 className="text-xl font-bold text-gray-900">SIP</h1>
             <button
-              onClick={copyShopLink}
-              className="p-2 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors"
-              title="Copy Shop Link"
+              onClick={() => setSidebarOpen(false)}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -295,12 +287,7 @@ export default function Dashboard() {
           <div className="relative bg-white w-80 max-w-full h-full shadow-xl">
             <div className="p-6 border-b border-gray-200">
               <div className="flex items-center justify-between">
-                <img 
-                  src="/images/sip-logo.svg" 
-                  alt="SIP Logo"
-                  className="h-6 w-6"
-                />
-                <h1 className="text-xl font-bold text-red-600">SIP</h1>
+                <h1 className="text-xl font-bold text-gray-900">SIP</h1>
                 <button
                   onClick={() => setSidebarOpen(false)}
                   className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
@@ -404,12 +391,7 @@ export default function Dashboard() {
       {/* Desktop Sidebar */}
       <div className="hidden lg:flex w-64 bg-white shadow-lg flex-col">
         <div className="p-6 border-b border-gray-200">
-          <img 
-            src="/images/sip-logo.svg" 
-            alt="SIP Logo"
-            className="h-6 w-6 mb-4"
-          />
-          <h1 className="text-xl font-bold text-red-600">SIP</h1>
+          <h1 className="text-xl font-bold text-gray-900">SIP</h1>
         </div>
 
         <nav className="flex-1 p-4">
